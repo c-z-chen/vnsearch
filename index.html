@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VN Search Engine</title>
+    <script src="./works/data.js"></script>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #f4f4f4; }
+        input { width: 98%; padding: 10px; font-size: 1.2rem; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        mark { background: yellow; font-weight: bold; }
+        .meta { color: #888; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <input type="text" id="q" placeholder="SEARCH OUERVE..." autofocus>
+    <p id="count"></p>
+    
+    <table>
+        <thead><tr><th>Snippet</th><th>Work</th></tr></thead>
+        <tbody id="results"></tbody>
+    </table>
+
+    <script>
+        const input = document.getElementById('q');
+        const results = document.getElementById('results');
+        const count = document.getElementById('count');
+
+        input.oninput = function() {
+            const query = input.value.toLowerCase();
+            results.innerHTML = "";
+            if (query.length < 2) return;
+
+            let found = 0;
+            nabokovWorks.forEach(item => {
+                const lowerText = item.text.toLowerCase();
+                if (lowerText.includes(query)) {
+                    found++;
+                    const row = results.insertRow();
+                    
+                    const startIdx = lowerText.indexOf(query);
+                    const words = item.text.split(" ");
+                    const snippet = item.text.substring(Math.max(0, startIdx - 40), Math.min(item.text.length, startIdx + 60));
+                    
+                    const highlighted = snippet.replace(new RegExp(query, 'gi'), m => `<mark>${m}</mark>`);
+                    
+                    row.innerHTML = `<td>...${highlighted}...</td><td class="meta">${item.title}</td>`;
+                }
+            });
+            count.innerText = `Matches found: ${found}`;
+        };
+    </script>
+</body>
+</html>
