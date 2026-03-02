@@ -35,17 +35,24 @@
             let found = 0;
             nabokovWorks.forEach(item => {
                 const lowerText = item.text.toLowerCase();
-                if (lowerText.includes(query)) {
+                let startIdx = lowerText.indexOf(query);
+                while (startIdx !== -1) {
                     found++;
                     const row = results.insertRow();
-                    
-                    const startIdx = lowerText.indexOf(query);
-                    const words = item.text.split(" ");
-                    const snippet = item.text.substring(Math.max(0, startIdx - 40), Math.min(item.text.length, startIdx + 60));
-                    
-                    const highlighted = snippet.replace(new RegExp(query, 'gi'), m => `<mark>${m}</mark>`);
-                    
+
+                    const snippet = item.text.substring(
+                        Math.max(0, startIdx - 40),
+                        Math.min(item.text.length, startIdx + query.length + 60)
+                    );
+
+                    const highlighted = snippet.replace(
+                        new RegExp(query, 'gi'),
+                        m => `<mark>${m}</mark>`
+                    );
+
                     row.innerHTML = `<td>...${highlighted}...</td><td class="meta">${item.title}</td>`;
+
+                    startIdx = lowerText.indexOf(query, startIdx + query.length);
                 }
             });
             count.innerText = `Matches found: ${found}`;
