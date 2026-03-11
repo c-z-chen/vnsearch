@@ -1,70 +1,35 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>VN Search Engine</title>
-        <script src="./works/data.js"></script>
-        <style>
-            * { box-sizing: border-box; }
-            body { font-family: monospace; padding: 20px; background: #f4f4f4; }
-            input { width: 100%; padding: 10px; font-size: 1.2rem; margin-bottom: 20px; box-sizing: border-box; }
-            table { width: 100%; border-collapse: collapse; background: white; box-sizing: border-box; }
-            th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-            mark { background: yellow; font-weight: bold; }
-            .meta { color: #888; font-size: 0.8rem; }
-            .footer { width: 100%; padding: 20px 0; text-align: center; color: #666; font-size: 0.9rem; border-top: 1px solid #ccc; margin-top: 20px; }
-            .footer a { color: #0066cc; text-decoration: none; }
-            .footer a:hover { text-decoration: underline; }
-        </style>
-    </head>
+	<head>
+		<title>VN Search Engine</title>
+		<script src="./works/data.js"></script>
+		<style>
+			* { box-sizing: border-box; }
+			body { font-family: monospace; padding: 20px; background: #f4f4f4; }
+			input { width: 100%; padding: 10px; font-size: 1.2rem; margin-bottom: 20px; box-sizing: border-box; }
+			table { width: 100%; border-collapse: collapse; background: white; box-sizing: border-box; }
+			th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+			mark { background: yellow; font-weight: bold; }
+			.meta { color: #888; font-size: 0.8rem; }
+			.footer { width: 100%; padding: 20px 0; text-align: center; color: #666; font-size: 0.9rem; border-top: 1px solid #ccc; margin-top: 20px; }
+			.footer a { color: #0066cc; text-decoration: none; }
+			.footer a:hover { text-decoration: underline; }
+		</style>
+	</head>
 
-    <body>
-        <input type="text" id="q" placeholder="SEARCH OUERVE..." autofocus>
-        <p id="count"></p>
-        
-        <table>
-            <thead><tr><th>Snippet</th><th>Work</th></tr></thead>
-            <tbody id="results"></tbody>
-        </table>
+	<body>
+		<input type="text" id="q" placeholder="SEARCH OUERVE..." autofocus>
+		<p id="count"></p>
+		
+		<table>
+			<thead><tr><th>Snippet</th><th>Work</th></tr></thead>
+			<tbody id="results"></tbody>
+		</table>
 
-        <div class="footer">
-            contact at <a href="mailto:c_z_chen@berkeley.edu">c_z_chen@berkeley.edu</a>
-        </div>
+		<div class="footer">
+			contact at <a href="mailto:c_z_chen@berkeley.edu">c_z_chen@berkeley.edu</a>
+		</div>
 
-        <script>
-            const input = document.getElementById('q');
-            const results = document.getElementById('results');
-            const count = document.getElementById('count');
-
-            input.oninput = function() {
-                const query = input.value.toLowerCase();
-                results.innerHTML = "";
-                if (query.length < 2) return;
-
-                let found = 0;
-                nabokovWorks.forEach(item => {
-                    const lowerText = item.text.toLowerCase();
-                    let startIdx = lowerText.indexOf(query);
-                    while (startIdx !== -1) {
-                        found++;
-                        const row = results.insertRow();
-
-                        const snippet = item.text.substring(
-                            Math.max(0, startIdx - 40),
-                            Math.min(item.text.length, startIdx + query.length + 60)
-                        );
-
-                        const highlighted = snippet.replace(
-                            new RegExp(query, 'gi'),
-                            m => `<mark>${m}</mark>`
-                        );
-
-                        row.innerHTML = `<td>...${highlighted}...</td><td class="meta">${item.title}</td>`;
-
-                        startIdx = lowerText.indexOf(query, startIdx + query.length);
-                    }
-                });
-                count.innerText = `Matches found: ${found}`;
-            };
-        </script>
-    </body>
+		<script src="./script.js"></script>
+	</body>
 </html>
