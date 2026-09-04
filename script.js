@@ -19,7 +19,9 @@ function performSearch() {
     }
 
     let found = 0;
+    const countsByTitle = new Map();
     const fragment = document.createDocumentFragment(); // Memory-only container
+    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
     for (const item of nabokovWorks) {
         const lowerText = item.text.toLowerCase();
@@ -27,6 +29,7 @@ function performSearch() {
 
         while (startIdx !== -1) {
             found++;
+            countsByTitle.set(item.title, (countsByTitle.get(item.title) || 0) + 1);
             
             // 1. Create elements in memory
             const row = document.createElement('tr');
@@ -36,11 +39,15 @@ function performSearch() {
             );
 
             const highlighted = snippet.replace(
-                new RegExp(query, 'gi'),
+                new RegExp(escapedQuery, 'gi'),
                 m => `<mark>${m}</mark>`
             );
 
-            row.innerHTML = `<td>...${highlighted}...</td><td class="meta">${item.title}</td>`;
+            const structureHtml = item.structure
+                ? `<span class="work-structure meta">${item.structure}</span>`
+                : "";
+
+            row.innerHTML = `<td>...${highlighted}...</td><td class="work-cell"><span class="work-title">${item.title}</span>${structureHtml}</td>`;
             fragment.appendChild(row);
 
             // 2. Limit results to keep it snappy
@@ -53,5 +60,13 @@ function performSearch() {
 
     // 3. One single DOM update
     results.appendChild(fragment);
-    count.innerText = `Matches found: ${found}${found >= 200 ? '+' : ''}`;
+
+    const breakdown = Array.from(countsByTitle.entries())
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .map(([title, total]) => `${title}: ${total}`)
+        .join(', ');
+
+    count.innerText = breakdown
+        ? `Matches found: ${found}${found >= 200 ? '+' : ''} (${breakdown})`
+        : `Matches found: ${found}${found >= 200 ? '+' : ''}`;
 }
